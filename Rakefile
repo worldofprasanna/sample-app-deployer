@@ -6,13 +6,13 @@ require_relative 'config/application'
 Rails.application.load_tasks
 
 task :provision do
-  sh "ansible-playbook -i ./deployer/hosts ./deployer/playbook.yml"
+  sh "ansible-playbook -i ./deployer/hosts ./deployer/playbook.yml -u root"
 end
 
-task :deploy-api do
-  sh "ansible-playbook -i ./deployer/hosts ./deployer/api.yml"
+task :deploy_api do
+  sh "ansible-playbook -i ./deployer/hosts ./deployer/api.yml -u root"
 end
 
-task :deploy-ui do
-  sh "ansible-playbook -i ./deployer/hosts ./deployer/ui.yml"
+task :deploy_ui do
+  sh "ansible-playbook -i ./deployer/hosts ./deployer/ui.yml -u root"
 end
