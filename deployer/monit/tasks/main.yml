@@ -1,0 +1,32 @@
+---
+  - name: Install Monit
+    become: yes
+    become_user: root
+    apt:
+      name: monit
+      state: present
+
+  - name: Copy the monit2telegram script
+    template:
+      src: monit2telegram.sh
+      dest: '/usr/local/bin/monit2telegram'
+
+  - name: Copy the send2telegram script
+    template:
+      src: sendtelegram.sh
+      dest: '/usr/local/bin/sendtelegram'
+
+  - name: Copy the telegramrc
+    template:
+      src: telegramrc
+      dest: '/etc/telegramrc'
+
+  - name: Copy the monitrc
+    template:
+      src: monitrc
+      dest: '/etc/monit/monitrc'
+
+  - name: restart monit
+    service:
+        name: monit
+        state: restarted

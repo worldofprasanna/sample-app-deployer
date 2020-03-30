@@ -1,0 +1,15 @@
+---
+  # TODO: Get the repo path from ENV variable
+  - name: Git clone the repository
+    git:
+      repo: 'git@github.com:worldofprasanna/test.git'
+      dest: /var/www/ui
+
+  - name: Install the dependencies
+    shell: cd /var/www/ui && npm i 
+
+  - name: Build the nodejs app
+    shell: cd /var/www/ui && npm run build
+
+  - name: Reload nginx
+    shell: nginx -s reload

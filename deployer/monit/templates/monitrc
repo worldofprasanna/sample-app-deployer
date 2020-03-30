@@ -1,0 +1,45 @@
+set daemon 30 # check services at 10 seconds intervals
+set log /var/log/monit.log
+
+set idfile /var/lib/monit/id
+
+set httpd port 2812 and
+  allow localhost        # allow localhost to connect to the server and
+  allow admin:monit      # require user 'admin' with password 'monit'
+
+# Alert if the palkar site is down
+ check host palkar with address matrimony.palkar.org
+    if failed port 80 protocol http request "/" then exec "/usr/local/bin/monit2telegram"
+
+# Alert if the disk usage is more than 70%
+ check device root with path /dev/vda1
+    if SPACE usage > 70% then exec "/usr/local/bin/monit2telegram"
+
+# Alert if the cpu usage is more than 90% for 5 cycles
+ check system $HOST
+    if CPU usage > 90% for 5 cycles then exec "/usr/local/bin/monit2telegram"
+
+# Alert if the nginx process is stopped
+check file nginx with path /var/run/nginx.pid
+    if not exist then exec "/usr/local/bin/monit2telegram"
+
+# Alert if the nginx process is stopped
+check process webserver with pidfile /var/run/nginx.pid
+  start program = "/etc/init.d/nginx start"
+  stop program = "/etc/init.d/nginx stop"
+
+# Alert if the postgres process is stopped
+check file postgres with path /var/lib/postgresql/11/main/postmaster.pid
+    if not exist then exec "/usr/local/bin/monit2telegram"
+
+# Restart the postgresql process
+check process database with pidfile /var/lib/postgresql/11/main/postmaster.pid
+  start program = "/etc/init.d/postgresql start"
+  stop program = "/etc/init.d/postgresql stop"
+
+# Alert if the puma process is stopped
+check file rails with path /var/www/palkar-api_production/shared/tmp/pids/puma.pid
+    if not exist then exec "/usr/local/bin/monit2telegram"
+
+include /etc/monit/conf.d/*
+include /etc/monit/conf-enabled/*

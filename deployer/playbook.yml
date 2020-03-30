@@ -1,0 +1,17 @@
+- hosts: web
+  vars_files:
+    - vars/main.yml
+  roles:
+    - role: geerlingguy.git
+    - role: geerlingguy.nodejs
+    - role: geerlingguy.ruby
+      ruby_install_from_source: true
+      ruby_download_url: https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.5.tar.gz
+      ruby_version: 2.6.5
+    - role: geerlingguy.postgresql
+      postgresql_hba_entries:
+        - { type: local, database: all, user: postgres, auth_method: trust }
+        - { type: local, database: all, user: all, auth_method: peer }
+        - { type: host, database: all, user: all, address: '127.0.0.1/32', auth_method: md5 }
+        - { type: host, database: all, user: all, address: '::1/128', auth_method: md5 }
+    - role: api

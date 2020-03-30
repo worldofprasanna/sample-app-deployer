@@ -1,0 +1,49 @@
+---
+  - name: Update bundler
+    shell: gem install bundler
+  
+  - name: Create the directories
+  # TODO: Use fact to configure the path
+    shell: mkdir -p /var/www/api_production/shared/config /etc/nginx/sites-enabled /app/log
+
+  - name: Setup the config file for database access
+    template:
+      # TODO: Read database configs from ENV variable / Use facts
+      src: database.yml.j2
+      dest: '/var/www/api_production/shared/config/database.yml'
+
+  - name: Copy the env file
+    template:
+      # TODO: Have means to pass the env variables
+      src: env.j2
+      dest: '/var/www/api_production/shared/.env'
+
+  - name: Set the master key to decrypt the credentials file
+    template:
+      src: master.key.j2
+      dest: '/var/www/api_production/shared/config/master.key'
+    notify: Reload the bashrc
+
+    # Move nginx to its own role
+  - name: Install nginx
+    apt: name=nginx state=latest
+
+  - name: Copy the nginx config file for the api
+    template:
+      src: api-nginx.j2
+      dest: '/etc/nginx/sites-enabled/api'
+
+  - name: Update nginx configuration
+    template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+
+  - name: Add MIME types
+    template:
+        src: mime.types.j2
+        dest: /etc/nginx/mime.types
+
+  - name: start nginx
+    service:
+        name: nginx
+        state: started

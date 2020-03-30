@@ -1,0 +1,11 @@
+# Installs Git
+- src: geerlingguy.git
+
+# Installs Ruby
+- src: geerlingguy.ruby
+
+# Installs Postgres
+- src: geerlingguy.postgresql
+
+# Installs nodejs
+- src: geerlingguy.nodejs

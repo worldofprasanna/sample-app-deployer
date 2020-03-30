@@ -1,0 +1,50 @@
+upstream api {
+    server unix:/var/www/api_production/shared/tmp/sockets/api-puma.sock fail_timeout=0;
+}
+
+server {
+    listen 80;
+    root /var/www/ui/dist;
+    gzip on;
+
+    index index.html index.htm;
+    if ($http_transfer_encoding ~* chunked) {
+        return 444;
+    }
+
+    access_log off;
+
+    location ~ ^/assets/ {
+      gzip_static on;
+      expires max;
+      add_header Cache-Control public;
+    }
+
+    location /api {
+      try_files $uri.html $uri @app;
+    }
+
+# Add monit dependency
+    location /monit/ {
+      rewrite ^/monit/(.*) /$1 break;
+      proxy_ignore_client_abort on;
+      proxy_pass   http://localhost:2812;
+      proxy_redirect  http://localhost:2812 /monit;
+      proxy_cookie_path / /monit/;
+    }
+
+    location /robots.txt {
+      root /var/www/api_production/current/public;
+      try_files $uri.html $uri @app;
+    }
+
+    location / {
+      try_files $uri $uri/ /index.html;
+    }
+
+    location @app {
+      proxy_redirect off;
+
+      proxy_pass http://api;
+    }
+}
