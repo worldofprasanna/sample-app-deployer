@@ -18,8 +18,6 @@ require 'capistrano/rails'
 require 'capistrano/puma'
 require 'capistrano/postgresql'
 require 'capistrano/ssh_doctor'
-require 'capistrano/sidekiq'
-require 'capistrano/sidekiq/monit'
 install_plugin Capistrano::SCM::Git
 
 install_plugin Capistrano::Puma  # Default puma tasks
